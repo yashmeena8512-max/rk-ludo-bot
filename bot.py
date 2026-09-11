@@ -17,7 +17,7 @@ from telegram.ext import (
     filters,
 )
 
-from .database import (
+from database import (
     CANCELLED,
     FINISHED,
     PLAYING,
@@ -27,7 +27,7 @@ from .database import (
     LudoDatabase,
     PlayerProfile,
 )
-from .ludo_engine import BASE_POSITION, FINAL_POSITION, legal_token_indexes
+from ludo_engine import BASE_POSITION, FINAL_POSITION, legal_token_indexes
 
 logger = logging.getLogger(__name__)
 ROOM_PATTERN = re.compile(r"^[A-Z0-9]{6}$")
