@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
-from .ludo_engine import FINAL_POSITION, IllegalMove, legal_token_indexes, resolve_move
+from ludo_engine import FINAL_POSITION, IllegalMove, legal_token_indexes, resolve_move
 
 WAITING = "waiting"
 PLAYING = "playing"
