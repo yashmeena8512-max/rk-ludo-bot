@@ -11,8 +11,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import PurePosixPath
 from urllib.parse import parse_qsl, urlparse
 
-from .database import GameError, GameState, LudoDatabase
-from .ludo_engine import absolute_position, legal_token_indexes
+from database import GameError, GameState, LudoDatabase
+from ludo_engine import absolute_position, legal_token_indexes
 
 logger = logging.getLogger(__name__)
 
