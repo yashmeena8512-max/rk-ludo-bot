@@ -44,3 +44,5 @@ def main() -> None:
     finally:
         api_server.shutdown()
         api_server.server_close()
+if __name__ == "__main__":
+    main()
