@@ -2,11 +2,11 @@ import logging
 import os
 from threading import Thread
 
-from .bot import build_application
-from .database import LudoDatabase
-from .mini_api import start_api_server
+from bot import build_application
+from database import LudoDatabase
+from mini_api import start_api_server
 
-TOKEN_ENV_VAR = "TELEGRAM_BOT_TOKEN"
+TOKEN_ENV_VAR = "BOT_TOKEN"
 
 
 def main() -> None:
