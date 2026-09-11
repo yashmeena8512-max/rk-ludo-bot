@@ -29,7 +29,8 @@ def main() -> None:
     api_server = start_api_server(
         database,
         token,
-        int(os.environ.get("LUDO_API_PORT", "8000")),
+        int(os.environ.get("PORT", os.environ.get("LUDO_API_PORT", "10000"))),
+
     )
     api_thread = Thread(
         target=api_server.serve_forever,
