@@ -284,9 +284,9 @@ async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 async def ludo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     telegram_id, first_name, username = profile_from_update(update)
-    database: LudoDatabase = update.application.bot_data["database"]
-    database.upsert_player(telegram_id, first_name, username)
     database: LudoDatabase = context.application.bot_data["database"]
+    database.upsert_player(telegram_id, first_name, username)
+    if not update.message:
         return
     active_game = database.get_active_game_for_player(telegram_id)
     if active_game:
