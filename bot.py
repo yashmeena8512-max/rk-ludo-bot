@@ -472,7 +472,7 @@ async def handle_game_callback(
 async def leaderboard_command(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     if update.message:
         await update.message.reply_text(
             leaderboard_text(database.get_leaderboard()), reply_markup=main_menu()
