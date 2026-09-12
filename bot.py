@@ -307,7 +307,7 @@ async def ludo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data.pop("awaiting_room_id", None)
     telegram_id, _, _ = profile_from_update(update)
-        database: LudoDatabase = context.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     active_game = database.get_active_game_for_player(telegram_id)
     if not update.message:
         return
@@ -338,7 +338,7 @@ async def join_room_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     telegram_id, first_name, username = profile_from_update(update)
-    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
+        database: LudoDatabase = context.application.bot_data["database"]
     try:
         state = database.join_game(room_id, telegram_id, first_name, username)
     except GameError as error:
