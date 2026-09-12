@@ -250,9 +250,8 @@ async def _broadcast_game(
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    del context
     telegram_id, first_name, username = profile_from_update(update)
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     database.upsert_player(telegram_id, first_name, username)
     if not update.message:
         return
@@ -276,20 +275,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    del context
     telegram_id, first_name, username = profile_from_update(update)
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     profile = database.upsert_player(telegram_id, first_name, username)
     if update.message:
         await update.message.reply_text(profile_text(profile), reply_markup=main_menu())
 
 
 async def ludo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    del context
     telegram_id, first_name, username = profile_from_update(update)
     database: LudoDatabase = update.application.bot_data["database"]
     database.upsert_player(telegram_id, first_name, username)
-    if not update.message:
+    database: LudoDatabase = context.application.bot_data["database"]
         return
     active_game = database.get_active_game_for_player(telegram_id)
     if active_game:
@@ -310,7 +307,7 @@ async def ludo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data.pop("awaiting_room_id", None)
     telegram_id, _, _ = profile_from_update(update)
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
     active_game = database.get_active_game_for_player(telegram_id)
     if not update.message:
         return
@@ -341,7 +338,7 @@ async def join_room_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     telegram_id, first_name, username = profile_from_update(update)
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
     try:
         state = database.join_game(room_id, telegram_id, first_name, username)
     except GameError as error:
@@ -374,7 +371,7 @@ async def handle_callback(
     if not query:
         return
     await query.answer()
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
     telegram_id, first_name, username = profile_from_update(update)
     database.upsert_player(telegram_id, first_name, username)
     data = query.data or ""
@@ -475,8 +472,7 @@ async def handle_game_callback(
 async def leaderboard_command(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    del context
-    database: LudoDatabase = update.application.bot_data["database"]
+    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
     if update.message:
         await update.message.reply_text(
             leaderboard_text(database.get_leaderboard()), reply_markup=main_menu()
