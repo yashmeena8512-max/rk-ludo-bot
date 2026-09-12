@@ -336,9 +336,9 @@ async def join_room_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("Send the 6-character room ID.")
         context.user_data["awaiting_room_id"] = True
         return
-
+        
     telegram_id, first_name, username = profile_from_update(update)
-        database: LudoDatabase = context.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     try:
         state = database.join_game(room_id, telegram_id, first_name, username)
     except GameError as error:
@@ -371,7 +371,7 @@ async def handle_callback(
     if not query:
         return
     await query.answer()
-    database: LudoDatabase = database: LudoDatabase = context.application.bot_data["database"]
+    database: LudoDatabase = context.application.bot_data["database"]
     telegram_id, first_name, username = profile_from_update(update)
     database.upsert_player(telegram_id, first_name, username)
     data = query.data or ""
