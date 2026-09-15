@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RK Ludo</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top,#35216d 0,#15152f 42%,#080914 100%);
+    color:white;
+    overflow-x:hidden;
+}
+
+.app{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    min-height:100vh;
+    padding:14px 12px 28px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+}
+
+.logo{
+    font-size:27px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.logo span{
+    color:#ffd43b;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.09);
+    border:1px solid rgba(255,255,255,.12);
+    padding:7px 11px;
+    border-radius:30px;
+}
+
+.avatar{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ffd43b,#ff8a00);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    color:#24154c;
+}
+
+.player-name{
+    font-size:13px;
+    font-weight:700;
+}
+
+.coins{
+    color:#ffd43b;
+    font-size:11px;
+}
+
+.status{
+    text-align:center;
+    padding:10px;
+    border-radius:14px;
+    background:rgba(255,255,255,.07);
+    margin-bottom:12px;
+    font-size:13px;
+}
+
+.board-wrap{
+    padding:8px;
+    border-radius:25px;
+    background:linear-gradient(145deg,#ffd43b,#7d42ff,#27d7ff);
+    box-shadow:0 12px 45px rgba(0,0,0,.45);
+}
+
+.board{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:19px;
+    overflow:hidden;
+    background:#f5f0dc;
+    display:grid;
+    grid-template-columns:repeat(15,1fr);
+    grid-template-rows:repeat(15,1fr);
+}
+
+.home{
+    position:absolute;
+    width:40%;
+    height:40%;
+    border-radius:16px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:7px;
+    z-index:2;
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.35);
+}
+
+.home.red{
+    left:0;
+    top:0;
+    background:#ed4052;
+}
+
+.home.green{
+    right:0;
+    top:0;
+    background:#28b866;
+}
+
+.home.yellow{
+    left:0;
+    bottom:0;
+    background:#f2b72d;
+}
+
+.home.blue{
+    right:0;
+    bottom:0;
+    background:#3285e8;
+}
+
+.home-title{
+    position:absolute;
+    top:5px;
+    left:0;
+    width:100%;
+    text-align:center;
+    font-size:9px;
+    font-weight:900;
+    color:rgba(255,255,255,.85);
+}
+
+.base{
+    background:white;
+    border-radius:50%;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.22);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:4px;
+}
+
+.token{
+    width:72%;
+    height:72%;
+    border-radius:50%;
+    box-shadow:0 3px 6px rgba(0,0,0,.35);
+}
+
+.token.red{background:#e72f45;}
+.token.green{background:#19a85b;}
+.token.yellow{background:#f4bd27;}
+.token.blue{background:#287de4;}
+
+.path{
+    position:absolute;
+    background:#fff;
+    border-radius:5px;
+    box-shadow:inset 0 0 0 1px #ddd;
+}
+
+.path.h1{left:40%;top:40%;width:20%;height:6.66%;}
+.path.h2{left:40%;top:53.33%;width:20%;height:6.66%;}
+.path.v1{left:40%;top:40%;width:6.66%;height:20%;}
+.path.v2{left:53.33%;top:40%;width:6.66%;height:20%;}
+
+.center{
+    position:absolute;
+    left:40%;
+    top:40%;
+    width:20%;
+    height:20%;
+    background:conic-gradient(
+        #ed4052 0 25%,
+        #28b866 25% 50%,
+        #3285e8 50% 75%,
+        #f2b72d 75% 100%
+    );
+    clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+    z-index:4;
+}
+
+.dice-area{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    margin:15px 0;
+}
+
+.dice{
+    width:72px;
+    height:72px;
+    border-radius:18px;
+    background:white;
+    color:#17172b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:43px;
+    font-weight:900;
+    box-shadow:0 8px 22px rgba(0,0,0,.35);
+}
+
+.turn{
+    font-size:13px;
+    color:#ddd;
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+button{
+    border:none;
+    border-radius:15px;
+    padding:15px 12px;
+    font-size:15px;
+    font-weight:900;
+    color:white;
+    cursor:pointer;
+}
+
+.roll{
+    grid-column:1/3;
+    background:linear-gradient(135deg,#ffca28,#ff7b00);
+    color:#211000;
+    box-shadow:0 7px 20px rgba(255,145,0,.28);
+}
+
+.action{
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.14);
+}
+
+button:disabled{
+    opacity:.45;
+}
+
+.message{
+    margin-top:12px;
+    text-align:center;
+    font-size:12px;
+    color:#bfc2d8;
+    min-height:18px;
+}
+
+.panel{
+    margin-top:15px;
+    padding:15px;
+    border-radius:18px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.09);
+}
+
+.panel h3{
+    font-size:15px;
+    margin-bottom:10px;
+}
+
+.room-row{
+    display:flex;
+    gap:8px;
+}
+
+input{
+    flex:1;
+    min-width:0;
+    border:none;
+    outline:none;
+    padding:13px;
+    border-radius:12px;
+    background:#fff;
+    color:#111;
+    font-weight:700;
+}
+
+.join{
+    background:#6848ff;
+}
+
+.players{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.player-card{
+    flex:1;
+    min-width:120px;
+    padding:10px;
+    border-radius:12px;
+    background:rgba(0,0,0,.2);
+    font-size:12px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.loader{
+    position:fixed;
+    inset:0;
+    background:#0a0a18;
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.spinner{
+    width:55px;
+    height:55px;
+    border:5px solid rgba(255,255,255,.15);
+    border-top-color:#ffd43b;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin-bottom:15px;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+.small{
+    font-size:11px;
+    color:#aaa;
+    text-align:center;
+    margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loader" class="loader">
+    <div class="spinner"></div>
+    <b>RK LUDO</b>
+    <div class="small">Loading game...</div>
+</div>
+
+<div class="app">
+
+    <div class="topbar">
+        <div class="logo">RK <span>LUDO</span></div>
+
+        <div class="profile">
+            <div class="avatar" id="avatar">P</div>
+            <div>
+                <div class="player-name" id="playerName">Player</div>
+                <div class="coins">🪙 <span id="coins">1000</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status" id="status">
+        Welcome to RK Ludo 🎲
+    </div>
+
+    <div class="board-wrap">
+        <div class="board">
+
+            <div class="home red">
+                <div class="home-title">RED</div>
+                <div class="base"><div class="token red"></div></div>
+                <div class="base"><div class="token red"></div></div>
+                <div class="base"><div class="token red"></div></div>
+                <div class="base"><div class="token red"></div></div>
+            </div>
+
+            <div class="home green">
+                <div class="home-title">GREEN</div>
+                <div class="base"><div class="token green"></div></div>
+                <div class="base"><div class="token green"></div></div>
+                <div class="base"><div class="token green"></div></div>
+                <div class="base"><div class="token green"></div></div>
+            </div>
+
+            <div class="home yellow">
+                <div class="home-title">YELLOW</div>
+                <div class="base"><div class="token yellow"></div></div>
+                <div class="base"><div class="token yellow"></div></div>
+                <div class="base"><div class="token yellow"></div></div>
+                <div class="base"><div class="token yellow"></div></div>
+            </div>
+
+            <div class="home blue">
+                <div class="home-title">BLUE</div>
+                <div class="base"><div class="token blue"></div></div>
+                <div class="base"><div class="token blue"></div></div>
+                <div class="base"><div class="token blue"></div></div>
+                <div class="base"><div class="token blue"></div></div>
+            </div>
+
+            <div class="path h1"></div>
+            <div class="path h2"></div>
+            <div class="path v1"></div>
+            <div class="path v2"></div>
+
+            <div class="center"></div>
+        </div>
+    </div>
+
+    <div class="dice-area">
+        <div class="dice" id="dice">⚀</div>
+        <div class="turn" id="turnText">Waiting for game...</div>
+    </div>
+
+    <div class="controls">
+        <button class="roll" id="rollBtn" onclick="rollDice()">
+            🎲 ROLL DICE
+        </button>
+
+        <button class="action" onclick="createGame()">
+            🆕 CREATE GAME
+        </button>
+
+        <button class="action" onclick="showJoin()">
+            🔗 JOIN GAME
+        </button>
+    </div>
+
+    <div class="panel hidden" id="joinPanel">
+        <h3>🔗 Join Game</h3>
+
+        <div class="room-row">
+            <input id="roomInput"
+                   maxlength="6"
+                   placeholder="Room ID">
+            <button class="join" onclick="joinGame()">JOIN</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>👥 Players</h3>
+        <div class="players" id="players">
+            <div class="player-card">Waiting for players...</div>
+        </div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp
+    ? window.Telegram.WebApp
+    : null;
+
+if(tg){
+    tg.ready();
+    tg.expand();
+}
+
+const API_BASE = window.location.origin;
+
+let game = null;
+let player = null;
+
+const diceFaces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+
+function setMessage(text){
+    document.getElementById("message").textContent = text || "";
+}
+
+function setStatus(text){
+    document.getElementById("status").textContent = text;
+}
+
+function initData(){
+    if(tg && tg.initData){
+        return tg.initData;
+    }
+
+    return "";
+}
+
+async function api(path, options={}){
+    const headers = {
+        "Content-Type":"application/json",
+        ...(options.headers || {})
+    };
+
+    const body = options.body || {};
+
+    const payload = {
+        ...body,
+        initData:initData()
+    };
+
+    const response = await fetch(API_BASE + path,{
+        method:options.method || "POST",
+        headers,
+        body:JSON.stringify(payload)
+    });
+
+    let data;
+
+    try{
+        data = await response.json();
+    }catch(e){
+        throw new Error("Server response invalid");
+    }
+
+    if(!response.ok || data.error){
+        throw new Error(data.error || "Request failed");
+    }
+
+    return data;
+}
+
+async function loadSession(){
+    try{
+        const data = await api("/ludo/session");
+
+        player = data.player || null;
+        game = data.activeGame || null;
+
+        updatePlayer();
+
+        if(game){
+            renderGame(game);
+        }else{
+            setStatus("Ready to play 🎲");
+            document.getElementById("turnText").textContent =
+                "Create or join a game";
+        }
+
+    }catch(error){
+        setStatus("RK Ludo is ready");
+        setMessage(error.message);
+    }
+
+    document.getElementById("loader").classList.add("hidden");
+}
+
+function updatePlayer(){
+    if(!player) return;
+
+    const name =
+        player.firstName ||
+        player.username ||
+        "Player";
+
+    document.getElementById("playerName").textContent = name;
+
+    document.getElementById("avatar").textContent =
+        name.charAt(0).toUpperCase();
+
+    if(player.coins !== undefined){
+        document.getElementById("coins").textContent =
+            player.coins;
+    }
+}
+
+async function createGame(){
+    setMessage("Creating game...");
+
+    try{
+        const data = await api("/ludo/games");
+
+        game = data.game || data;
+        renderGame(game);
+
+        setMessage(
+            game.roomId
+            ? "Room created: " + game.roomId
+            : "Game created successfully"
+        );
+
+    }catch(error){
+        setMessage(error.message);
+    }
+}
+
+function showJoin(){
+    document.getElementById("joinPanel")
+        .classList.remove("hidden");
+
+    document.getElementById("roomInput").focus();
+}
+
+async function joinGame(){
+    const room =
+        document.getElementById("roomInput")
+        .value
+        .trim()
+        .toUpperCase();
+
+    if(!room){
+        setMessage("Room ID डालें");
+        return;
+    }
+
+    setMessage("Joining game...");
+
+    try{
+        const data = await api("/ludo/games/join",{
+            body:{roomId:room}
+        });
+
+        game = data.game || data;
+        renderGame(game);
+
+        setMessage("Game joined successfully 🎮");
+
+    }catch(error){
+        setMessage(error.message);
+    }
+}
+
+async function rollDice(){
+    if(!game || !game.roomId){
+        setMessage("पहले game create या join करें");
+        return;
+    }
+
+    const btn = document.getElementById("rollBtn");
+
+    btn.disabled = true;
+    setMessage("Rolling dice...");
+
+    try{
+        const data = await api(
+            "/ludo/" + encodeURIComponent(game.roomId) + "/roll"
+        );
+
+        game = data.game || data;
+
+        if(data.dice){
+            animateDice(data.dice);
+        }
+
+        renderGame(game);
+
+        setMessage(
+            data.message ||
+            "Dice rolled 🎲"
+        );
+
+    }catch(error){
+        setMessage(error.message);
+    }
+
+    btn.disabled = false;
+}
+
+function animateDice(finalValue){
+    let count = 0;
+
+    const interval = setInterval(()=>{
+        const value =
+            Math.floor(Math.random()*6);
+
+        document.getElementById("dice")
+            .textContent = diceFaces[value];
+
+        count++;
+
+        if(count >= 8){
+            clearInterval(interval);
+
+            const v =
+                Math.max(1,Math.min(6,
+                    Number(finalValue)));
+
+            document.getElementById("dice")
+                .textContent = diceFaces[v-1];
+        }
+    },80);
+}
+
+function renderGame(data){
+    if(!data) return;
+
+    const state =
+        data.game || data;
+
+    game = state;
+
+    if(state.diceResult){
+        const value =
+            Number(state.diceResult);
+
+        if(value >= 1 && value <= 6){
+            document.getElementById("dice")
+                .textContent = diceFaces[value-1];
+        }
+    }
+
+    if(state.roomId){
+        setStatus(
+            "Room: " + state.roomId +
+            " • " +
+            (state.status || "playing")
+        );
+    }
+
+    if(state.currentTurnId){
+        document.getElementById("turnText")
+            .textContent =
+            "🎯 Turn: " + state.currentTurnId;
+    }
+
+    if(state.players){
+        const box =
+            document.getElementById("players");
+
+        box.innerHTML = "";
+
+        state.players.forEach(p=>{
+            const div =
+                document.createElement("div");
+
+            div.className = "player-card";
+
+            div.innerHTML =
+                "<b>" +
+                escapeHtml(
+                    p.firstName ||
+                    p.username ||
+                    "Player"
+                ) +
+                "</b><br>" +
+                "🎨 " +
+                escapeHtml(p.color || "Player");
+
+            box.appendChild(div);
+        });
+    }
+}
+
+function escapeHtml(text){
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+loadSession();
+</script>
+
+</body>
+  </html>
