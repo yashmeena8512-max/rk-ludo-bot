@@ -145,12 +145,13 @@ class LudoApiHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         try:
-            path = PurePosixPath(urlparse(self.path).path)
-            parts = path.parts[1:] if path.parts and path.parts[0] == "/" else path.parts
-            if path == PurePosixPath("/health"):
-    self._send_json({"status": "ok"})
-    return
-            if path == PurePosixPath("/ludo/leaderboard"):
+                    path = PurePosixPath(urlparse(self.path).path)
+        parts = path.parts[1:] if path.parts and path.parts[0] == "/" else path.parts
+        if path == PurePosixPath("/health"):
+            self._send_json({"status": "ok"})
+            return
+        if path == PurePosixPath("/ludo/leaderboard"):
+
                 payload = [
                     _player_payload(player)
                     for player in self.database.get_leaderboard()
