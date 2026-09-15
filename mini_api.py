@@ -315,5 +315,5 @@ def start_api_server(
         (LudoApiHandler,),
         {"database": database, "bot_token": bot_token},
     )
-    server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), handler)
     return server
