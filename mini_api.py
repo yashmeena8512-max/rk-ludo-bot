@@ -147,6 +147,18 @@ class LudoApiHandler(BaseHTTPRequestHandler):
         try:
             path = PurePosixPath(urlparse(self.path).path)
             parts = path.parts[1:] if path.parts and path.parts[0] == "/" else path.parts
+            if str(path) in ("/", "/index.html"):
+        try:
+                with open("index.html", "rb") as f:
+                content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+                return
+                except FileNotFoundError:
+                raise ApiError("Frontend UI (index.html) not found.", 404)
             if path == PurePosixPath("/health"):
                 self._send_json({"status": "ok"})
                 return
