@@ -145,13 +145,12 @@ class LudoApiHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         try:
-                    path = PurePosixPath(urlparse(self.path).path)
-        parts = path.parts[1:] if path.parts and path.parts[0] == "/" else path.parts
-        if path == PurePosixPath("/health"):
-            self._send_json({"status": "ok"})
-            return
-        if path == PurePosixPath("/ludo/leaderboard"):
-
+            path = PurePosixPath(urlparse(self.path).path)
+            parts = path.parts[1:] if path.parts and path.parts[0] == "/" else path.parts
+            if path == PurePosixPath("/health"):
+                self._send_json({"status": "ok"})
+                return
+            if path == PurePosixPath("/ludo/leaderboard"):
                 payload = [
                     _player_payload(player)
                     for player in self.database.get_leaderboard()
@@ -160,8 +159,6 @@ class LudoApiHandler(BaseHTTPRequestHandler):
                 return
             if len(parts) == 3 and parts[:2] == ("ludo", "games"):
                 room_id = parts[2]
-                # The public snapshot endpoint is read-only. Mutations always
-                # require verified initData and use the POST endpoints below.
                 with self.database._lock:
                     connection = self.database._connection
                     if not connection.execute(
@@ -173,7 +170,7 @@ class LudoApiHandler(BaseHTTPRequestHandler):
                 return
             raise ApiError("Endpoint not found.", 404)
         except ApiError as error:
-            self._send_error(error)
+                self._send_error(error)
 
     def do_POST(self) -> None:
         try:
